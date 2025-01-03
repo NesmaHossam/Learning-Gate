@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning Gate - Rooms</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      nav {
+        margin: 0;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        background-color: #080474;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #b6a168;
+      }
+
+      input[type="text"] {
+        padding: 10px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 300px;
+      }
+
+      .navButton {
+        background-color: #080474;
+        transition: background-color 0.3s ease;
+      }
+
+      .navButton:hover {
+        background-color: #b6a168;
+      }
+
+      #sendMessage {
+        transition: background-color 0.3s ease;
+      }
+
+      #sendMessage:hover {
+        background-color: #b6a168;
+      }
+
+      #messageInput,
+      #videoUrlInput {
+        border-color: #b8c1c6;
+      }
+
+      #videoContainer {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        margin: 20px;
+        padding: 3px;
+        background-color: #e5e7eb;
+        border: 3px solid #ccc;
+        border-radius: 8px;
+        max-width: 100%;
+        height: auto;
+      }
+
+      #embedVideo {
+        background-color: navy;
+      }
+
+      .flex-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+
+      .lectures-container {
+        max-width: calc(50% - 20px);
+      }
+
+      .video-container {
+        max-width: calc(50% - 20px);
+      }
+
+      .chat-container {
+        max-width: calc(50% - 20px);
+      }
+
+      @media (max-width: 768px) {
+        .flex-container {
+          flex-direction: column;
+        }
+
+        .lectures-container,
+        .video-container,
+        .chat-container {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body class="font-sans antialiased bg-gray-100">
+    <div id="app" class="flex flex-col min-h-screen">
+      <nav class="bg-white border-b border-gray-300">
+        <div
+          class="container mx-auto py-4 px-6 flex justify-between items-center"
+        >
+          <a href="/" class="flex items-center gap-2">
+            <img src="logo.png" alt="Logo" class="h-20" />
+          </a>
+          <div class="flex items-center gap-4">
+            <button
+              id="createRoom"
+              class="navButton bg-[#080474] text-white px-4 py-2 rounded"
+            >
+              Create Room
+            </button>
+            <button
+              id="joinRoom"
+              class="navButton bg-[#080474] text-white px-4 py-2 rounded"
+            >
+              Join Room
+            </button>
+            <input
+              type="text"
+              id="roomIdInput"
+              placeholder="Room ID"
+              class="navInput px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+        </div>
+      </nav>
+      <main class="flex-1 bg-gray-100">
+        <div class="container mx-auto py-8">
+          <div class="flex-container">
+            <div
+              class="lectures-container max-w-lg mx-auto bg-white rounded-lg shadow-md p-4 border border-gray-300 mt-8 mb-8"
+            >
+              <h3
+                class="text-[#080474] font-semibold text-lg mb-4 flex items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  ></path>
+                </svg>
+                Lectures
+              </h3>
+              <ul id="lectures" class="grid gap-4">
+                <% data.forEach((item, i) => { %>
+                <li>
+                  <button
+                    id="url<%= i %>"
+                    onclick="embed('<%= item.videoUrl %>')"
+                    class="w-full px-4 py-2 bg-[#080474] text-white rounded-md hover:bg-[#b6a168] transition duration-300 focus:outline-none"
+                  >
+                    <%= item.title %>
+                  </button>
+                </li>
+                <% }) %>
+              </ul>
+            </div>
+            <div
+              id="videoContainer"
+              class="video-container bg-gray-200 rounded-lg overflow-hidden aspect-w-16 aspect-h-9 mb-8 max-w-lg"
+            ></div>
+            <div
+              class="chat-container max-w-lg mx-auto bg-white rounded-lg shadow-md p-4 border border-gray-300 mt-8 mb-8"
+            >
+              <h3
+                class="text-[#080474] font-semibold text-lg mb-4 flex items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  ></path>
+                </svg>
+                Chat
+              </h3>
+              <div
+                class="chat-messages max-h-[60vh] overflow-y-auto mb-4"
+                id="chatMessages"
+              ></div>
+              <form id="chatForm" class="flex items-center">
+                <input
+                  type="text"
+                  id="messageInput"
+                  placeholder="Type a message"
+                  class="flex-1 px-3 py-2 rounded-l-lg border border-gray-300 focus:outline-none focus:border-[#080474]"
+                />
+                <button
+                  type="submit"
+                  id="sendMessage"
+                  class="px-4 py-2 bg-[#080474] text-white rounded-r-lg hover:bg-[#b6a168] transition duration-300 focus:outline-none"
+                >
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
